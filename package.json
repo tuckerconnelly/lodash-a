@@ -1,4 +1,6 @@
 {
+  "name": "lodash-a",
+  "version": "0.0.1",
   "description": "Asynchronous helpers for lodash/fp",
   "repository": "https://github.com/tuckerconnelly/lodash-a",
   "main": "index.js",

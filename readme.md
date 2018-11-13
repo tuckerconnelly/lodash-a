@@ -4,6 +4,31 @@ Asynchronous helpers for lodash.
 
 Early version! Will be adding more methods as needed.
 
+## Usage
+
+Install:
+
+```
+npm i lodash-a
+```
+
+Import and use:
+
+```js
+const _ = require('lodash');
+const _a = require('lodash-a');
+
+_a.pipe(
+  fetch,
+  _.invoke('json'),
+  _.map('author.url'),
+  _a.mapParallel(fetch),
+  _a.mapParallel(_.invoke('json')),
+  _.map('name')
+)('https://api.github.com/repos/octocat/Hello-World/commits')
+// > ['The Octocat', 'Johnneylee Jack Rollins', 'Spaceghost', ...]
+```
+
 ## Methods
 
 ### pipe(fns, data)
