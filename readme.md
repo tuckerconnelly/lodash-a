@@ -83,17 +83,101 @@ _a.pipe(
 // > The names of all the authors of the branches of the octocate/Hello-World repo, firing off requests sequentially
 ```
 
-### reduce(accumulator, fn, data)
+### mapBatches(batchSize, fn, data)
 
-Like lodash's `reduce`, but `await`s each fn call.
+Maps the data using the `fn`, calling all promise-making functions sequentially in parallel batches of `batchSize`.
 
 Example:
 
 ```js
+_a.pipe(
+  fetch,
+  _.invoke('json'),
+  _.map('name'),
+  _.map(n => `https://api.github.com/repos/octocat/Hello-World/branches/${n}`)
+  _a.mapBatches(5, fetch),
+  _a.mapSequential(_.invoke('json')),
+  _.map('author.login')
+)('https://api.github.com/repos/octocat/Hello-World/branches')
+// > The names of all the authors of the branches of the octocate/Hello-World repo, firing off requests in batches of 5
+```
 
-async asyncSum(a, b) {
-  return a + b
-}
+### delay(ms, fn, data)
 
-_a.reduce(0, asyncSum, [1, 2, 3])
-// > 6
+Delays the `fn` by `ms`
+
+Example:
+
+```js
+_a.pipe(
+  fetch,
+  _.invoke('json'),
+  _.map('name'),
+  _.map(n => `https://api.github.com/repos/octocat/Hello-World/branches/${n}`)
+  _a.mapBatches(5, _a.delay(1000, fetch)),
+  _a.mapSequential(_.invoke('json')),
+  _.map('author.login')
+)('https://api.github.com/repos/octocat/Hello-World/branches')
+// > The names of all the authors of the branches of the octocate/Hello-World repo, firing off requests in batches of 5, delaying each request (effectively, each batch) by 1000 milliseconds
+```
+
+### preDelay(ms, fn, data)
+
+Alias for `delay`
+
+
+### postDelay(ms, fn, data)
+
+Like `delay`, but delays after the function is called instead of before.
+
+### catchWith(catchingFn, fn, data)
+
+Catches the function call with `catchingFn`.
+
+Example:
+
+```js
+_a.pipe([
+  _a.catchWith(console.error),
+  fetch,
+  _.invoke('text')
+])('https://google.com')
+// > The html of google.com, or undefined, with a logged error, if an error occurred
+```
+
+### tap(fn, data)
+
+Calls `await fn(data)`, passing `data` to the next function and ignoring the return value of `fn(data)`.
+
+Example:
+
+```js
+_a.pipe([
+  _a.tap(async url => console.log(url)),
+  fetch,
+  _.invoke('text')
+])('https://google.com')
+// > The html of google.com, logging the url before fetching
+```
+
+### applyValues(object, data)
+
+Accepts an object with functions as each of its properties, calling each of the functions and replacing them with values.
+
+Example:
+
+```js
+_a.pipe(
+  fetch,
+  _.invoke('json'),
+  _.map('name'),
+  _.map(n => `https://api.github.com/repos/octocat/Hello-World/branches/${n}`)
+  _a.mapBatches(5, _a.delay(1000, fetch)),
+  _a.mapSequential(_.invoke('json')),
+  _a.mapParallel(_a.applyValues({
+    commitAuthorName: _.get('commit.commit.author.name'),
+    parentCount: _.reduce(_.sum, 0, _.get('commit.parents'))
+  }))
+)('https://api.github.com/repos/octocat/Hello-World/branches')
+```
+> [{commitAuthorName: 'The Octocat', parentCount: 2}, ...]
