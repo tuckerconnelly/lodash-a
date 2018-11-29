@@ -1,6 +1,6 @@
 {
   "name": "lodash-a",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Asynchronous helpers for lodash/fp",
   "repository": "https://github.com/tuckerconnelly/lodash-a",
   "main": "index.js",
@@ -55,7 +55,6 @@
     "setupTestFrameworkScriptFile": "./testUtils.js"
   },
   "husky": {
-    "hooks": {
-    }
+    "hooks": {}
   }
 }
