@@ -56,8 +56,6 @@
   },
   "husky": {
     "hooks": {
-      "precommit": "lint-staged",
-      "postmerge": "npm i"
     }
   }
 }
