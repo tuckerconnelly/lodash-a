@@ -179,5 +179,5 @@ _a.pipe(
     parentCount: _.reduce(_.sum, 0, _.get('commit.parents'))
   }))
 )('https://api.github.com/repos/octocat/Hello-World/branches')
-```
 > [{commitAuthorName: 'The Octocat', parentCount: 2}, ...]
+```
